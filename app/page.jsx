@@ -189,13 +189,21 @@ export default function Home() {
 
   return (
     <div className="base">
-      <h1 className="title">PORTFOLIO</h1>
-      <h2 className="logo">E-Å</h2>
-      <div className="gallery">
-        <ul className="cards">
+      <h1 className="fixed z-10 m-0 top-5 left-5 text-white text-9xl/[7rem]  ">
+        PORTFOLIO
+      </h1>
+      <h2 className="fixed z-10 m-0 bottom-5 right-5 z-10 text-white text-8xl/[6rem]">
+        E-Å
+      </h2>
+      <div className=" gallery absolute w-full h-screen">
+        <ul className="cards absolute w-56 h-56 top-[20%] left-[10%]">
           {images.map((image, index) => (
-            <li key={index}>
+            <li
+              className="p-0 m-0 w-56 h-56 absolute top-0 left-0 list-none"
+              key={index}
+            >
               <Image
+                className="w-full h-full object-cover overflow-hidden aspect-square"
                 src={image}
                 alt={`Image ${index + 1}`}
                 layout="responsive"
@@ -208,18 +216,31 @@ export default function Home() {
           ))}
         </ul>
       </div>
-      <div className="drag-proxy"></div>
+      <div className="drag-proxy invisible absolute"></div>
       {highlightedImage !== null && (
-        <div className="highlighted-image">
-          <Image
-            src={images[highlightedImage]}
-            alt="highlighted"
-            layout="responsive"
-            width={500}
-            height={500}
-            quality={50}
-            loading="lazy"
-          />
+        <div className="highlighted-image fixed bottom-5 right-5 max-w-[50vw] h-[80vh] overflow-hidden">
+          {media[highlightedImage].includes(".mp4") ? (
+            <video
+              className="w-full h-full object-cover"
+              src={media[highlightedImage]}
+              alt="highlighted"
+              width={500}
+              height={500}
+              controls
+              loading="lazy"
+            />
+          ) : (
+            <Image
+              className="w-full h-full object-cover"
+              src={media[highlightedImage]}
+              alt="highlighted"
+              layout="responsive"
+              width={500}
+              height={500}
+              quality={50}
+              loading="lazy"
+            />
+          )}
         </div>
       )}
     </div>
