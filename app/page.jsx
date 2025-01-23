@@ -219,28 +219,16 @@ export default function Home() {
       <div className="drag-proxy invisible absolute"></div>
       {highlightedImage !== null && (
         <div className="highlighted-image fixed bottom-5 right-5 max-w-[50vw] h-[80vh] overflow-hidden">
-          {media[highlightedImage].includes(".mp4") ? (
-            <video
-              className="w-full h-full object-cover"
-              src={media[highlightedImage]}
-              alt="highlighted"
-              width={500}
-              height={500}
-              controls
-              loading="lazy"
-            />
-          ) : (
-            <Image
-              className="w-full h-full object-cover"
-              src={media[highlightedImage]}
-              alt="highlighted"
-              layout="responsive"
-              width={500}
-              height={500}
-              quality={50}
-              loading="lazy"
-            />
-          )}
+          <Image
+            className="w-full h-full object-cover"
+            src={images[highlightedImage]}
+            alt="highlighted"
+            layout="responsive"
+            width={500}
+            height={500}
+            quality={50}
+            loading="lazy"
+          />
         </div>
       )}
     </div>
