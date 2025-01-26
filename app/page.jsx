@@ -5,28 +5,42 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Draggable } from "gsap/Draggable";
 import Image from "next/image";
-import img1 from "../public/img1.jpg";
-import img2 from "../public/img2.jpg";
-import img3 from "../public/img3.jpg";
-import img4 from "../public/img4.jpg";
-import img5 from "../public/img5.jpg";
-import img6 from "../public/img6.jpg";
-import img7 from "../public/img7.jpg";
-import img8 from "../public/img8.jpg";
+import { client } from "../lib/sanity";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 export default function Home() {
+  const [images, setImages] = useState([]);
   const [highlightedImage, setHighlightedImage] = useState(null);
 
   useEffect(() => {
+    async function fetchImages() {
+      const query = `*[_type == "collection"]{
+        images[]{
+          title,
+          description,
+          date,
+          "imageUrl": image.asset->url
+        }
+      }`;
+      const collections = await client.fetch(query);
+      const fetchedImages = collections[0]?.images || [];
+      setImages(fetchedImages);
+    }
+
+    fetchImages();
+  }, []);
+
+  useEffect(() => {
+    const cards = gsap.utils.toArray(".cards li");
+    if (!cards.length) return;
+
     let iteration = 0;
 
     gsap.set(".cards li", { yPercent: 100, opacity: 0, scale: 1 });
 
     const spacing = 0.1,
       snapTime = gsap.utils.snap(spacing),
-      cards = gsap.utils.toArray(".cards li"),
       animateFunc = (element) => {
         const tl = gsap.timeline();
         tl.fromTo(
@@ -166,36 +180,17 @@ export default function Home() {
         scrollToOffset(scrub.vars.offset);
       },
     });
-  }, []);
-
-  const images = [
-    img1,
-    img2,
-    img3,
-    img4,
-    img5,
-    img6,
-    img7,
-    img8,
-    img1,
-    img2,
-    img3,
-    img4,
-    img5,
-    img6,
-    img7,
-    img8,
-  ];
+  }, [images]);
 
   return (
     <div className="base">
-      <h1 className="fixed z-10 m-0 top-5 left-5 text-white text-9xl/[7rem]  ">
+      <h1 className="fixed z-10 m-0 top-5 left-5 text-white text-9xl/[7rem]">
         PORTFOLIO
       </h1>
-      <h2 className="fixed z-10 m-0 bottom-5 right-5 z-10 text-white text-8xl/[6rem]">
+      <h2 className="fixed z-10 m-0 bottom-5 right-5 text-white text-8xl/[6rem]">
         E-Å
       </h2>
-      <div className=" gallery absolute w-full h-screen">
+      <div className="gallery absolute w-full h-screen">
         <ul className="cards absolute w-56 h-56 top-[20%] left-[10%]">
           {images.map((image, index) => (
             <li
@@ -204,9 +199,8 @@ export default function Home() {
             >
               <Image
                 className="w-full h-full object-cover overflow-hidden aspect-square"
-                src={image}
-                alt={`Image ${index + 1}`}
-                layout="responsive"
+                src={image.imageUrl}
+                alt={image.title || `Image ${index + 1}`}
                 width={500}
                 height={500}
                 quality={50}
@@ -219,11 +213,16 @@ export default function Home() {
       <div className="drag-proxy invisible absolute"></div>
       {highlightedImage !== null && (
         <div className="highlighted-image fixed bottom-5 right-5 max-w-[50vw] h-[80vh] overflow-hidden">
+          <h3 className="text-white text-4xl">
+            {images[highlightedImage]?.title}
+          </h3>
+          <p className="text-white text-lg">
+            {images[highlightedImage]?.description}
+          </p>
           <Image
             className="w-full h-full object-cover"
-            src={images[highlightedImage]}
-            alt="highlighted"
-            layout="responsive"
+            src={images[highlightedImage]?.imageUrl}
+            alt={images[highlightedImage]?.title || "highlighted"}
             width={500}
             height={500}
             quality={50}
